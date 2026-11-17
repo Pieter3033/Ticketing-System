@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pulsit Public Ticket Form</title>
+    <link rel="icon" href="assets/favicon.png">
+    <script>
+      document.documentElement.dataset.theme = localStorage.getItem("srf-jobcard-theme") === "light" ? "light" : "dark";
+      window.INTERNAL_TICKETS_API_BASE = window.INTERNAL_TICKETS_API_BASE || "";
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260623-public-ticket-info">
+    <script src="public_ticket.js?v=20260702-same-origin-api" defer></script>
+  </head>
+  <body class="public-ticket-page">
+    <main class="public-ticket-shell">
+      <section class="public-ticket-hero">
+        <div class="public-ticket-brand">
+          <img class="public-ticket-logo" src="assets/logowhite_3.png" alt="Pulsit">
+          <div class="public-ticket-actions">
+            <button class="public-ticket-info-button" id="publicTicketInfoButton" type="button" aria-haspopup="dialog" aria-controls="publicTicketInfoDialog">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg>
+              <span>Info</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div id="notice" class="notice" hidden></div>
+
+      <section class="public-ticket-layout">
+        <section class="ticket-panel public-ticket-panel">
+          <div class="panel-heading">
+            <div class="panel-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2l5 5v5h-2V8h-4V4H7v16h5v2H5V2h9zm1 2.4V6h1.6L15 4.4z"></path><path d="M18 14a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm1 2v2h2v2h-4v-4h2z"></path></svg>
+            </div>
+            <div>
+              <h2>Create Ticket</h2>
+              <p>Select the department for this ticket.</p>
+            </div>
+          </div>
+
+          <form id="publicTicketForm" autocomplete="off">
+            <label>
+              <span class="field-head">Your name <strong>*</strong></span>
+              <input name="requester_name" required maxlength="120" placeholder="Enter your name">
+            </label>
+            <label>
+              <span class="field-head">Your contact</span>
+              <input name="requester_contact" maxlength="120" placeholder="Phone or email for follow-up">
+            </label>
+
+            <label>
+              <span class="field-head">Department <strong>*</strong></span>
+              <select name="department" required>
+                <option value="">Select department</option>
+                <option selected>Helpdesk</option>
+                <option>Pulscam</option>
+              </select>
+            </label>
+            <label>
+              <span class="field-head">Priority <strong>*</strong></span>
+              <select name="priority" required>
+                <option value="">Select priority</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Critical</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="field-head">Category <strong>*</strong></span>
+              <select name="category" required>
+                <option value="">Select category</option>
+                <option>Unit not updating - needs to unlimp</option>
+                <option>Unit not updating - needs to unlock</option>
+                <option>Unit not updating - needs to be limped</option>
+                <option>Unit not updating - needs to lock</option>
+                <option>Unit not Updating</option>
+                <option>Unit stuck in limp</option>
+                <option>Unit not unlocking</option>
+                <option>Unit not locking</option>
+                <option>Disable Event: (Tamper, Driver ID Tag, Panic etc)</option>
+                <option>Reg. Update</option>
+                <option>Remove Unit from System</option>
+                <option>Setup Unit</option>
+                <option>Script Change</option>
+                <option>FOB Remote Issue</option>
+                <option>Other - (Include in description)</option>
+              </select>
+            </label>
+            <label>
+              <span class="field-head">
+                Registration <strong>*</strong>
+                <span class="registration-lookup" data-registration-lookup="form" aria-live="polite">
+                  <span class="registration-lookup-item" data-lookup-kind="exact" hidden>
+                    <button class="registration-lookup-icon" type="button" aria-label="Vehicle lookup status"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg></button>
+                    <span class="registration-lookup-popover" role="tooltip"></span>
+                  </span>
+                </span>
+              </span>
+              <input name="registration" required maxlength="50" placeholder="Enter registration">
+            </label>
+
+            <label class="checkbox-field public-ticket-span-2">
+              <input id="clientCallback" name="client_callback" type="checkbox" value="1" autocomplete="off">
+              <span>Client call back</span>
+            </label>
+
+            <div id="clientCallbackFields" class="callback-fields public-ticket-span-2" style="display:none;">
+              <label><span class="field-head">Client name <strong>*</strong></span><input name="client_name" maxlength="100" placeholder="Enter client name" disabled></label>
+              <label><span class="field-head">Client contact <strong>*</strong></span><input name="client_contact" maxlength="50" placeholder="Enter contact number" disabled></label>
+            </div>
+
+            <label class="public-ticket-span-2">
+              <span class="field-head">Description <strong>*</strong></span>
+              <textarea name="description" required placeholder="Provide detailed information about the issue..."></textarea>
+            </label>
+
+            <label class="upload public-ticket-span-2">
+              <span class="upload-copy">
+                <strong>Attach file</strong>
+                <span>Optional, one file only</span>
+              </span>
+              <span class="upload-picker">
+                <span class="upload-button">Choose File</span>
+                <input id="attachmentInput" name="attachment" type="file">
+                <span class="upload-filename" data-upload-filename>No file chosen</span>
+              </span>
+            </label>
+
+            <button class="submit public-ticket-span-2" type="submit">Submit Ticket</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="publicTicketInfoDialog" class="public-ticket-dialog">
+      <div class="public-ticket-dialog-shell">
+        <button class="public-ticket-dialog-close" id="publicTicketInfoClose" type="button" aria-label="Close information">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h2>Before you submit</h2>
+        <ul class="public-ticket-checklist">
+          <li>Use the vehicle registration exactly as it appears on the system.</li>
+          <li>Describe what has already been tried so the Helpdesk team can act faster.</li>
+          <li>If a client expects feedback, tick `Client call back` and include the contact details.</li>
+          <li>Keep the ticket number after submission for follow-up.</li>
+        </ul>
+      </div>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+/* The standalone editor shares the CC Escalation communication-log layout. */
+#logCommunicationDialog {
+  width: min(1780px, calc(100% - 80px));
+  max-width: none;
+  max-height: calc(var(--app-viewport-height) - 60px);
+  color: var(--text);
+  border-radius: 18px;
+}
+#logCommunicationDialog::backdrop { background: rgba(3, 10, 20, .78); backdrop-filter: blur(6px); }
+#logCommunicationDialog .dialog-shell {
+  padding: 0;
+  max-height: calc(var(--app-viewport-height) - 60px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel-strong);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .4);
+}
+#logCommunicationDialog .log-communication-view { min-height: 0; display: block; }
+#logCommunicationDialog .log-communication-header {
+  gap: 4px;
+  padding: 28px 70px 22px 28px;
+  border-color: var(--border);
+  background: var(--panel);
+}
+#logCommunicationDialog .log-communication-eyebrow { color: #5ce0ee; font-size: 12px; font-weight: 900; letter-spacing: .06em; }
+#logCommunicationDialog h1 { font-size: 28px; font-weight: 800; }
+#logCommunicationDialog .log-communication-header p { font-size: 14px; font-weight: 600; }
+#logCommunicationDialog .dialog-close {
+  top: 24px; right: 28px; width: 34px; height: 34px;
+  display: grid; place-items: center; padding: 0;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); background: var(--surface);
+  box-shadow: none; font-size: 26px; line-height: 1;
+}
+#logCommunicationDialog .dialog-close:hover { border-color: var(--border-strong); background: var(--surface-soft); }
+#logCommunicationDialog .log-communication-main { padding: 22px 28px 24px; background: transparent; }
+#logCommunicationDialog .log-communication-form { display: grid; gap: 20px; }
+#logCommunicationDialog [hidden] { display: none !important; }
+#logCommunicationDialog .log-communication-draft-banner {
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text-muted); background: var(--input-bg); font-size: 13px;
+}
+#logCommunicationDialog .log-communication-draft-banner:has([data-state="saved"]) { border-color: rgba(74, 222, 128, .28); background: rgba(34, 197, 94, .08); color: #a7d9b8; }
+#logCommunicationDialog .log-communication-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+#logCommunicationDialog .log-communication-context { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#logCommunicationDialog .log-communication-form label { display: grid; gap: 6px; color: var(--text-muted); font-size: 12px; font-weight: 800; }
+#logCommunicationDialog .log-communication-grid label > span { text-transform: uppercase; }
+#logCommunicationDialog .log-communication-account-hint { color: var(--text-muted); font-size: 12px; font-weight: 500; line-height: 1.4; }
+#logCommunicationDialog .log-communication-category-field { display: grid; align-content: start; gap: 6px; color: var(--text-muted); font-size: 12px; font-weight: 800; }
+#logCommunicationCategoryLabel { text-transform: uppercase; }
+#logCommunicationCategoryPicker { position: relative; min-width: 0; }
+#logCommunicationDialog .log-communication-category-trigger {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; min-width: 0; min-height: 40px; padding: 9px 12px;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  color: var(--text); background: var(--input-bg); font-size: 14px; font-weight: 600; text-align: left;
+}
+#logCommunicationCategoryValue { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#logCommunicationCategoryTrigger svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+#logCommunicationCategoryTrigger:focus-visible,
+#logCommunicationCategoryTrigger[aria-expanded="true"] { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, .16); }
+#logCommunicationCategoryTrigger[aria-invalid="true"] { border-color: #f87171; }
+#logCommunicationDialog .log-communication-category-menu {
+  position: absolute; inset: calc(100% + 6px) 0 auto; z-index: 30;
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  color: var(--text); background: var(--input-bg); box-shadow: 0 14px 32px rgba(0, 0, 0, .3); overflow: hidden;
+}
+#logCommunicationDialog .log-communication-category-search { padding: 10px; border-bottom: 1px solid var(--border); }
+#logCommunicationDialog .log-communication-category-options { max-height: min(280px, 35vh); overflow-y: auto; overscroll-behavior: contain; padding: 5px; }
+#logCommunicationDialog .log-communication-category-option {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; min-height: 36px; padding: 8px 10px; border: 0; border-radius: 5px;
+  color: var(--text); background: transparent; text-align: left; font-size: 14px; font-weight: 600;
+}
+#logCommunicationDialog .log-communication-category-option:hover,
+#logCommunicationDialog .log-communication-category-option.is-active { background: rgba(59, 130, 246, .2); }
+#logCommunicationDialog .log-communication-category-option[aria-selected="true"]::after { content: "✓"; color: #60a5fa; }
+#logCommunicationDialog .log-communication-category-empty { margin: 0; padding: 12px 16px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
+#logCommunicationDialog input,
+#logCommunicationDialog select,
+#logCommunicationDialog textarea {
+  width: 100%; min-width: 0; min-height: 40px; padding: 9px 12px;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  color: var(--text); background: var(--input-bg); font-size: 14px; font-weight: 600;
+}
+#logCommunicationDialog input[readonly] { color: var(--text-muted); background: var(--readonly-bg); }
+#logCommunicationDialog input::placeholder,
+#logCommunicationDialog textarea::placeholder { color: var(--text-muted); opacity: .7; }
+#logCommunicationDialog input:focus,
+#logCommunicationDialog select:focus,
+#logCommunicationDialog textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, .16); }
+#logCommunicationDialog .log-communication-editor { min-width: 0; }
+#logCommunicationDialog .log-communication-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+#logCommunicationEditorTitle { font-size: 18px; font-weight: 800; }
+#logCommunicationEntryCount { margin-left: 6px; color: #5ce0ee; }
+#logCommunicationDialog .filter-button {
+  min-height: 40px; padding: 9px 16px; border: 1px solid #2563eb; border-radius: 8px;
+  color: #fff; background: linear-gradient(180deg, #3b82f6, #1d4ed8); font-size: 14px; font-weight: 800;
+}
+#logCommunicationDialog .filter-button.secondary { border-color: var(--border); color: var(--text); background: var(--surface); }
+#logCommunicationDialog .filter-button.secondary:hover { border-color: var(--border-strong); background: var(--surface-soft); }
+#logCommunicationDialog .log-communication-table-wrap { max-height: 480px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+#logCommunicationDialog .log-communication-table { width: 100%; min-width: 1580px; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+#logCommunicationDialog .log-communication-order-col { width: 100px; }
+#logCommunicationDialog .log-communication-date-col { width: 245px; }
+#logCommunicationDialog .log-communication-type-col { width: 220px; }
+#logCommunicationDialog .log-communication-person-col { width: 215px; }
+#logCommunicationDialog .log-communication-phone-col { width: 190px; }
+#logCommunicationDialog .log-communication-email-col { width: 245px; }
+#logCommunicationDialog th,
+#logCommunicationDialog td { padding: 10px 8px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+#logCommunicationDialog th { position: sticky; top: 0; z-index: 1; color: var(--text-muted); background: var(--panel-strong); font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+#logCommunicationDialog th:last-child,
+#logCommunicationDialog td:last-child { border-right: 0; }
+#logCommunicationDialog tbody tr:last-child td { border-bottom: 0; }
+#logCommunicationDialog .log-communication-row { padding: 0; border: 0; border-radius: 0; background: transparent; }
+#logCommunicationDialog .log-communication-row:hover { background: rgba(13, 148, 136, .06); }
+#logCommunicationDialog .log-communication-row.is-dragging { opacity: .45; }
+#logCommunicationDialog .log-communication-table input,
+#logCommunicationDialog .log-communication-table select,
+#logCommunicationDialog .log-communication-table textarea { min-height: 40px; padding: 8px 9px; font-size: 13px; }
+#logCommunicationDialog .log-communication-table textarea { display: block; height: 40px; resize: vertical; }
+#logCommunicationDialog .log-communication-row-tools { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; }
+#logCommunicationDialog .log-communication-row-tools button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); background: var(--surface); font-size: 17px; }
+#logCommunicationDialog .log-communication-row-tools [data-remove-row] { color: #f87171; }
+#logCommunicationDialog .log-communication-drag { cursor: grab; }
+#logCommunicationDialog .log-communication-drag:active { cursor: grabbing; }
+#logCommunicationDialog .log-communication-drag svg { width: 16px; height: 16px; }
+#logCommunicationDialog .log-communication-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 0; padding-top: 18px; border-top: 1px solid var(--border); }
+#logCommunicationDialog .log-communication-message { margin: 0; font-size: 14px; }
+:root[data-theme="light"] #logCommunicationDialog .log-communication-eyebrow,
+:root[data-theme="light"] #logCommunicationEntryCount { color: #087b85; }
+:root[data-theme="light"] #logCommunicationDialog .log-communication-draft-banner:has([data-state="saved"]) { border-color: #bbdfc7; color: #32734b; background: #eff8f2; }
+@media (max-width: 980px) {
+  #logCommunicationDialog { width: calc(100% - 24px); }
+  #logCommunicationDialog .log-communication-header { padding: 22px 64px 20px 20px; }
+  #logCommunicationDialog .log-communication-main { padding: 20px; }
+  #logCommunicationDialog .dialog-close { top: 20px; right: 20px; }
+}
+@media (max-width: 600px) {
+  #logCommunicationDialog .log-communication-grid { grid-template-columns: 1fr; }
+  #logCommunicationDialog .log-communication-editor-head { align-items: flex-start; gap: 10px; }
+  #logCommunicationDialog .log-communication-editor-head .filter-button { padding-inline: 10px; }
+}

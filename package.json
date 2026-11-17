@@ -1,0 +1,21 @@
+{
+  "name": "internaltickets-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal tickets API for write workflows that should not run through SQLPage.",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "start": "node server/server.js",
+    "start:infinity": "node server/infinity-server.js",
+    "dev": "node --watch server/server.js",
+    "check": "node -e \"require('./server/app'); console.log('internaltickets api ok')\""
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "mssql": "^11.0.1",
+    "multer": "^2.0.2"
+  }
+}

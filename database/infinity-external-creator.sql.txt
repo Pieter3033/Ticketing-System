@@ -1,0 +1,7 @@
+/* Infinity external creator field, requested 16 October 2026.
+Database: CC. Table: dbo.tkt_InternalTickets.
+Add ExternalCreatedBy NVARCHAR(120) NULL for the Infinity submitter's supplied name.
+No account creation, role changes or ticket backfill. Expected existing ticket rows updated: 0.
+Apply only through the approved database workflow. This .txt file is not a SQLPage route.
+*/
+ALTER TABLE CC.dbo.tkt_InternalTickets ADD ExternalCreatedBy NVARCHAR(120) NULL;

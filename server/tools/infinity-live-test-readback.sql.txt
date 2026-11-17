@@ -1,0 +1,17 @@
+-- Read-only verification of the single labelled fixture; never returns other tickets.
+SELECT 'json' AS component,
+    (SELECT
+        (SELECT COUNT(*) FROM CC.dbo.tkt_InternalTickets
+         WHERE Description = CAST($test_description AS NVARCHAR(MAX))
+           AND Category = 'API JSON TEST' AND ExternalCreatedBy = 'API Integration Test') AS ticketCount,
+        JSON_QUERY((SELECT TicketID AS ticketId, TicketNumber AS ticketNumber,
+            Department AS department, Priority AS priority, Status AS status,
+            RequesterGroup AS requesterGroup,
+            CAST(CASE WHEN reg_no = 'API-TEST' AND c_name = 'API Test Client'
+                 AND c_contact = '0000000000' AND COALESCE(c_contacted, 0) = 0
+                 THEN 1 ELSE 0 END AS BIT) AS payloadFieldsMatch
+         FROM CC.dbo.tkt_InternalTickets
+         WHERE Description = CAST($test_description AS NVARCHAR(MAX))
+           AND Category = 'API JSON TEST' AND ExternalCreatedBy = 'API Integration Test'
+         FOR JSON PATH)) AS tickets
+     FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS contents;

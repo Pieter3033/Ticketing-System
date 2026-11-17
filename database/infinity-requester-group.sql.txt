@@ -1,0 +1,87 @@
+/*
+REVIEW ONLY. NOT APPLIED. Move outside the SQLPage web root before execution.
+Requires explicit approval for the following specific database change:
+Database CC, table dbo.tkt_InternalTickets, RequesterGroup CHECK constraint.
+Expand the existing Internal/IBLS/CRM allowed set to include Infinity.
+Expected affected ticket rows: zero. No tables or columns are added.
+
+This script recognizes only a simple, single-column allowed-group constraint.
+Custom constraints, missing prerequisites, disabled checks, and unexpected
+existing groups cause a rollback. Inspect those cases rather than weakening
+unrelated checks. Run only after reviewing the actual schema.
+*/
+USE [CC];
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    DECLARE @ticketTableId INT = OBJECT_ID(N'dbo.tkt_InternalTickets', N'U');
+    DECLARE @groupColumnId INT = COLUMNPROPERTY(@ticketTableId, N'RequesterGroup', 'ColumnId');
+    IF @ticketTableId IS NULL OR @groupColumnId IS NULL
+        THROW 50001, 'The existing ticket table and RequesterGroup column are required.', 1;
+
+    DECLARE @candidateCount INT;
+    DECLARE @constraintName SYSNAME;
+    DECLARE @definition NVARCHAR(MAX);
+    DECLARE @disabled BIT;
+    DECLARE @untrusted BIT;
+
+    SELECT @candidateCount = COUNT(*)
+    FROM sys.check_constraints
+    WHERE parent_object_id = @ticketTableId
+      AND definition LIKE '%RequesterGroup%'
+      AND definition LIKE '%''Internal''%'
+      AND definition LIKE '%''IBLS''%'
+      AND definition LIKE '%''CRM''%';
+
+    IF @candidateCount <> 1
+        THROW 50002, 'Expected one Internal/IBLS/CRM group constraint. Review the actual schema before proceeding.', 1;
+
+    SELECT @constraintName = name, @definition = definition,
+           @disabled = is_disabled, @untrusted = is_not_trusted
+    FROM sys.check_constraints
+    WHERE parent_object_id = @ticketTableId
+      AND definition LIKE '%RequesterGroup%'
+      AND definition LIKE '%''Internal''%'
+      AND definition LIKE '%''IBLS''%'
+      AND definition LIKE '%''CRM''%';
+
+    IF @disabled = 1 OR @untrusted = 1
+        THROW 50003, 'The existing group check is disabled or untrusted. Review it first.', 1;
+
+    -- Recognize only positive IN/equality/OR membership checks on RequesterGroup.
+    -- Any additional operator, literal, column, or function leaves text and stops.
+    DECLARE @normalized NVARCHAR(MAX) = LOWER(@definition);
+    SET @normalized = REPLACE(REPLACE(REPLACE(REPLACE(@normalized, CHAR(9), ''), CHAR(10), ''), CHAR(13), ''), ' ', '');
+    SET @normalized = REPLACE(REPLACE(REPLACE(REPLACE(@normalized, '[', ''), ']', ''), '(', ''), ')', '');
+    SET @normalized = REPLACE(@normalized, 'n''', '''');
+    SET @normalized = REPLACE(@normalized, 'requestergroup', '');
+    SET @normalized = REPLACE(REPLACE(REPLACE(REPLACE(@normalized, '''internal''', ''), '''ibls''', ''), '''crm''', ''), '''infinity''', '');
+    SET @normalized = REPLACE(REPLACE(REPLACE(REPLACE(@normalized, 'in', ''), 'or', ''), '=', ''), ',', '');
+    IF @normalized <> ''
+        THROW 50004, 'Custom group check detected. Preserve its additional rules and review manually.', 1;
+
+    IF EXISTS (SELECT 1 FROM dbo.tkt_InternalTickets
+               WHERE RequesterGroup IS NULL OR RequesterGroup NOT IN ('Internal', 'IBLS', 'CRM', 'Infinity'))
+        THROW 50005, 'Unexpected existing requester groups. No data will be changed.', 1;
+
+    -- An already-compatible constraint is left intact.
+    IF @definition NOT LIKE '%''Infinity''%'
+    BEGIN
+        DECLARE @alterSql NVARCHAR(MAX) =
+            N'ALTER TABLE dbo.tkt_InternalTickets DROP CONSTRAINT ' + QUOTENAME(@constraintName) + N';'
+          + N' ALTER TABLE dbo.tkt_InternalTickets WITH CHECK ADD CONSTRAINT ' + QUOTENAME(@constraintName)
+          + N' CHECK (RequesterGroup IN (''Internal'', ''IBLS'', ''CRM'', ''Infinity''));';
+        EXEC sys.sp_executesql @alterSql;
+    END;
+
+    COMMIT TRANSACTION;
+    SELECT name, definition, is_disabled, is_not_trusted
+    FROM sys.check_constraints
+    WHERE parent_object_id = @ticketTableId AND name = @constraintName;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;

@@ -1,0 +1,16 @@
+title = "Internal tickets secret scanning"
+
+[extend]
+useDefault = true
+
+# This exact, public test fixture is never a deployed credential. Keep all
+# default checks enabled for other values, including values in test files.
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+description = "Exact synthetic key used by the isolated Infinity tests"
+condition = "AND"
+paths = ['''(^|[/\\])tests[/\\]infinity-(api|json)\.test\.cjs$''']
+regexTarget = "secret"
+regexes = ['''^isolated-fixture-key-0123456789abcdef$''']
